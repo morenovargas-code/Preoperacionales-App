@@ -38,14 +38,13 @@ window.inspeccionActualData = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         loggedInElements.forEach(el => el.classList.remove("hidden"));
-        sidebar.classList.add("active");
+        
 
         window.operadorActivo = user.email;
         mostrarDashboard();
     } else {
         loggedInElements.forEach(el => el.classList.add("hidden"));
-        sidebar.classList.remove("active");
-
+        
         window.operadorActivo = null;
         window.inspeccionActualId = null;
         window.inspeccionActualData = null;
@@ -93,11 +92,19 @@ document.querySelectorAll(".list-group-item").forEach(item => {
 
 function ejecutarAccionSidebar(accion) {
 
-    // 🔑 Cerrar sidebar en móviles
-    if (window.innerWidth < 992) {
-        document.querySelector(".sidebar")?.classList.remove("active");
-    }
+    const sidebar = document.querySelector(".sidebar");
 
+    
+    // Limpiar selección
+    document
+        .querySelectorAll('.sidebar a')
+        .forEach(el => el.classList.remove('active'));
+
+    // Marcar activo
+    const activo = document.querySelector(`[data-action="${accion}"]`);
+    activo?.classList.add("active");
+
+    // Navegación
     if (accion === "preoperacional") mostrarMenuPreoperacional();
     else if (accion === "dashboard") mostrarDashboard();
     else if (accion === "equipos") mostrarEquipos();
@@ -119,6 +126,13 @@ function mostrarDashboard() {
 
 /* ================= PREOPERACIONAL ================= */
 function mostrarMenuPreoperacional() {
+    // Asegura que nada quede encima
+    document.querySelector(".hamburger")?.addEventListener("click", () => {
+    document.querySelector(".sidebar")?.classList.toggle("active");
+});
+
+    const main = document.getElementById("main-content");
+    main.style.zIndex = "1";
     mainContent.innerHTML = `
         <button class="btn btn-outline-secondary mb-4" onclick="mostrarDashboard()"><i class="bi bi-arrow-left"></i> Dashboard</button>
         <h2 class="mb-5 text-info"><i class="bi bi-clipboard-check"></i> Preoperacional</h2>
@@ -726,6 +740,7 @@ function mostrarLogin() {
 }
 
 console.log("✅ Sistema MOVA cargado completamente - ¡Listo para usar!");
+
 
 
 

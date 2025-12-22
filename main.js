@@ -34,6 +34,16 @@ window.coleccion = null;
 window.inspeccionActualId = null;
 window.inspeccionActualData = null;
 
+function toggleSidebar() {
+    sidebar.classList.toggle("active");
+}
+
+function cerrarSidebarEnMovil() {
+    if (window.innerWidth <= 992) {
+        sidebar.classList.remove("active");
+    }
+}
+
 /* ================= AUTH ================= */
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -41,7 +51,7 @@ onAuthStateChanged(auth, (user) => {
         
 
         window.operadorActivo = user.email;
-        mostrarDashboard();
+        mostrarDashboard(); cerrarSidebarEnMovil();
     } else {
         loggedInElements.forEach(el => el.classList.add("hidden"));
         
@@ -85,30 +95,30 @@ document.getElementById("registrarse-form").addEventListener("submit", async (e)
 document.getElementById("salida").onclick = () => signOut(auth);
 
 /* ================= SIDEBAR ================= */
-// ✅ MEJORA 1: Sidebar NO se cierra en preoperacional
 document.querySelectorAll(".list-group-item").forEach(item => {
-    item.onclick = () => ejecutarAccionSidebar(item, item.dataset.action);
+    item.addEventListener("click", () => {
+        ejecutarAccionSidebar(item.dataset.action);
+    });
 });
 
 function ejecutarAccionSidebar(accion) {
 
-    const sidebar = document.querySelector(".sidebar");
-
-    
     // Limpiar selección
-    document
-        .querySelectorAll('.sidebar a')
-        .forEach(el => el.classList.remove('active'));
+    document.querySelectorAll(".list-group-item")
+        .forEach(el => el.classList.remove("active"));
 
     // Marcar activo
     const activo = document.querySelector(`[data-action="${accion}"]`);
     activo?.classList.add("active");
 
     // Navegación
-    if (accion === "preoperacional") mostrarMenuPreoperacional();
-    else if (accion === "dashboard") mostrarDashboard();
+    if (accion === "dashboard") mostrarDashboard();
+    else if (accion === "preoperacional") mostrarMenuPreoperacional();
     else if (accion === "equipos") mostrarEquipos();
     else if (accion === "reportes") mostrarReportes();
+
+    // ✅ Cerrar sidebar en móvil
+    cerrarSidebarEnMovil();
 }
 
 
@@ -126,11 +136,6 @@ function mostrarDashboard() {
 
 /* ================= PREOPERACIONAL ================= */
 function mostrarMenuPreoperacional() {
-    // Asegura que nada quede encima
-    document.querySelector(".hamburger")?.addEventListener("click", () => {
-    document.querySelector(".sidebar")?.classList.toggle("active");
-});
-
     const main = document.getElementById("main-content");
     main.style.zIndex = "1";
     mainContent.innerHTML = `
@@ -740,6 +745,7 @@ function mostrarLogin() {
 }
 
 console.log("✅ Sistema MOVA cargado completamente - ¡Listo para usar!");
+
 
 
 

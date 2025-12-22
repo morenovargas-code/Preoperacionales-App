@@ -314,13 +314,17 @@ body, .navbar, .navbar-brand, * {
 ========================= */
 @media (max-width: 992px) {
     .sidebar {
-        pointer-events: none;
-        opacity: 0;
+        top: var(--navbar-height);
+        left: -100%;
+        width: 260px;
+        height: calc(100vh - var(--navbar-height));
+        border-radius: 0 18px 18px 0;
+        opacity: 1;
+        pointer-events: auto;
     }
 
     .sidebar.active {
-        pointer-events: auto;
-        opacity: 1;
+        left: 0;
     }
 
 
@@ -348,4 +352,5 @@ body, .navbar, .navbar-brand, * {
         padding: 8px 16px;
     }
 }
+
 

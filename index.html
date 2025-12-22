@@ -29,32 +29,25 @@
 
 
 <!-- ================= NAVBAR ================= -->
-<nav class="navbar navbar-dark py-3">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
+<nav class="navbar">
+    <div class="d-flex align-items-center gap-3">
 
-        <!-- IZQUIERDA: HAMBURGUESA + TÍTULO -->
-        <div class="d-flex align-items-center gap-3">
-
-            <!-- Hamburguesa (solo móvil) -->
-            <button class="hamburger">
-                <i class="bi bi-list fs-4"></i>
-            </button>
-
-            <!-- Título -->
-            <div class="title-box">
-                <a class="navbar-brand modern-title m-0" href="#">
-                    Mantenimiento MOVA
-                </a>
-            </div>
-
-        </div>
-
-        <!-- DERECHA: SALIR (solo logueado) -->
-        <button class="btn exit-btn logged-in hidden" id="salida">
-            <i class="bi bi-box-arrow-right me-2"></i>Salir
+        <!-- HAMBURGUESA REAL -->
+        <button class="hamburger" id="hamburger">
+            <i class="bi bi-list fs-4"></i>
         </button>
 
+        <!-- TÍTULO -->
+        <div class="title-box">
+            <span class="modern-title">Mantenimiento MOVA</span>
+        </div>
+
     </div>
+
+    <!-- SOLO LOGUEADO -->
+    <button class="exit-btn logged-in hidden" id="salida">
+        <i class="bi bi-box-arrow-right me-2"></i>Salir
+    </button>
 </nav>
 
 <!-- ================= SIDEBAR ================= -->
@@ -153,5 +146,6 @@
 
 </body>
 </html>
+
 
 

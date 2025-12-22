@@ -34,15 +34,11 @@ window.coleccion = null;
 window.inspeccionActualId = null;
 window.inspeccionActualData = null;
 
-function toggleSidebar() {
-    sidebar.classList.toggle("active");
-}
+const hamburger = document.getElementById("hamburger");
 
-function cerrarSidebarEnMovil() {
-    if (window.innerWidth <= 992) {
-        sidebar.classList.remove("active");
-    }
-}
+  hamburger.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+ });
 
 /* ================= AUTH ================= */
 onAuthStateChanged(auth, (user) => {
@@ -103,22 +99,21 @@ document.querySelectorAll(".list-group-item").forEach(item => {
 
 function ejecutarAccionSidebar(accion) {
 
-    // Limpiar selección
     document.querySelectorAll(".list-group-item")
         .forEach(el => el.classList.remove("active"));
 
-    // Marcar activo
     const activo = document.querySelector(`[data-action="${accion}"]`);
     activo?.classList.add("active");
 
-    // Navegación
     if (accion === "dashboard") mostrarDashboard();
     else if (accion === "preoperacional") mostrarMenuPreoperacional();
     else if (accion === "equipos") mostrarEquipos();
     else if (accion === "reportes") mostrarReportes();
 
-    // ✅ Cerrar sidebar en móvil
-    cerrarSidebarEnMovil();
+    // 🔥 CIERRA SIDEBAR EN MÓVIL
+    if (window.innerWidth <= 992) {
+        sidebar.classList.remove("active");
+    }
 }
 
 
@@ -745,6 +740,7 @@ function mostrarLogin() {
 }
 
 console.log("✅ Sistema MOVA cargado completamente - ¡Listo para usar!");
+
 
 
 

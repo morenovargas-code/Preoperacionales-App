@@ -91,22 +91,19 @@ document.querySelectorAll(".list-group-item").forEach(item => {
     item.onclick = () => ejecutarAccionSidebar(item, item.dataset.action);
 });
 
-function ejecutarAccionSidebar(elemento, accion) {
+function ejecutarAccionSidebar(accion) {
 
-    // 🔹 Quitar activo a todos
-    document
-        .querySelectorAll('.list-group-item')
-        .forEach(el => el.classList.remove('active'));
+    // 🔑 Cerrar sidebar en móviles
+    if (window.innerWidth < 992) {
+        document.querySelector(".sidebar")?.classList.remove("active");
+    }
 
-    // 🔹 Activar el clickeado
-    elemento.classList.add('active');
-
-    // 🔹 Ejecutar acción
     if (accion === "preoperacional") mostrarMenuPreoperacional();
     else if (accion === "dashboard") mostrarDashboard();
     else if (accion === "equipos") mostrarEquipos();
     else if (accion === "reportes") mostrarReportes();
 }
+
 
 /* ================= DASHBOARD ================= */
 // ✅ MEJORA 3: SOLO operador, sin botones
@@ -729,6 +726,7 @@ function mostrarLogin() {
 }
 
 console.log("✅ Sistema MOVA cargado completamente - ¡Listo para usar!");
+
 
 
 

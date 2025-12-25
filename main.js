@@ -118,14 +118,25 @@ function ejecutarAccionSidebar(accion) {
 
 
 /* ================= DASHBOARD ================= */
-// ✅ MEJORA 3: SOLO operador, sin botones
+// ✅ Bienvenida glass premium
 function mostrarDashboard() {
     mainContent.innerHTML = `
-        <div class="jumbotron bg-secondary p-5 rounded-4 text-center">
-            <h2 class="mb-4">👋 Bienvenido ${window.operadorActivo}</h2>
-            <i class="bi bi-clipboard-check fs-1 text-info mb-4"></i>
-            <p class="lead">Usa el sidebar para navegar →</p>
-        </div>
+        <section class="dashboard-hero">
+            <div class="hero-card">
+                <div class="hero-icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+
+                <h2 class="hero-title">
+                    Bienvenido,<br>
+                    <span>${window.operadorActivo}</span>
+                </h2>
+
+                <p class="hero-subtitle">
+                    Selecciona una opción del menú lateral para comenzar
+                </p>
+            </div>
+        </section>
     `;
 }
 
@@ -740,6 +751,7 @@ function mostrarLogin() {
 }
 
 console.log("✅ Sistema MOVA cargado completamente - ¡Listo para usar!");
+
 
 
 

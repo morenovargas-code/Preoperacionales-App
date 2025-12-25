@@ -41,6 +41,35 @@ body, .navbar, .navbar-brand, * {
     box-shadow: 0 8px 25px rgba(255,255,255,.15);
     z-index: 1050;
     padding: 12px 30px;
+
+    /* 🔑 LAYOUT */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* =========================
+   NAVBAR SECCIONES
+========================= */
+.nav-left,
+.nav-center,
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-center {
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-left {
+    min-width: 48px;
+}
+
+.nav-right {
+    min-width: 90px;
+    justify-content: flex-end;
 }
 
 /* =========================
@@ -91,7 +120,6 @@ body, .navbar, .navbar-brand, * {
     width: 260px;
     height: 100vh;
 
-    /* 🔑 ESPACIO REAL DEL NAVBAR */
     padding: calc(var(--navbar-height) + 20px) 20px 20px;
 
     background: rgba(0,0,0,.75);
@@ -153,16 +181,17 @@ body, .navbar, .navbar-brand, * {
    HAMBURGER
 ========================= */
 .hamburger {
-    position: fixed;
-    top: 22px;
-    left: 22px;
-    z-index: 1100;
     background: rgba(0,0,0,.75);
     border: 2px solid rgba(255,255,255,.5);
     color: white;
     border-radius: 12px;
     padding: 10px 14px;
+
     display: none;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
 }
 
 /* =========================
@@ -204,8 +233,6 @@ body, .navbar, .navbar-brand, * {
 
     .hamburger {
         display: inline-flex;
-        align-items: center;
-        justify-content: center;
     }
 }
 
@@ -223,6 +250,8 @@ body, .navbar, .navbar-brand, * {
         padding: 8px 16px;
     }
 }
+
+
 
 
 

@@ -250,6 +250,20 @@ body, .navbar, .navbar-brand, * {
         padding: 8px 16px;
     }
 }
+/* =========================
+   NAVBAR FIX MOBILE
+========================= */
+.navbar {
+    position: fixed;
+}
+
+/* El contenedor del título se centra absoluto */
+.title-box {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
 
 
 

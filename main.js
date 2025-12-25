@@ -35,28 +35,43 @@ window.inspeccionActualId = null;
 window.inspeccionActualData = null;
 
 const hamburger = document.getElementById("hamburger");
+    /* 🔒 ESTADO INICIAL BLOQUEADO */
+    sidebar.classList.add("hidden");
+    hamburger.classList.add("hidden");
 
   hamburger.addEventListener("click", () => {
+    if (!window.operadorActivo) return; // 🔒 sin sesión no hace nada
     sidebar.classList.toggle("active");
- });
+});
 
 /* ================= AUTH ================= */
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        loggedInElements.forEach(el => el.classList.remove("hidden"));
-        
+   if (user) {
+    // 🔓 USUARIO LOGUEADO
+    loggedInElements.forEach(el => el.classList.remove("hidden"));
 
-        window.operadorActivo = user.email;
-        mostrarDashboard(); cerrarSidebarEnMovil();
-    } else {
-        loggedInElements.forEach(el => el.classList.add("hidden"));
-        
-        window.operadorActivo = null;
-        window.inspeccionActualId = null;
-        window.inspeccionActualData = null;
+    sidebar.classList.remove("hidden");
+    hamburger.classList.remove("hidden");
 
-        mostrarLogin(); // 👈 CLAVE
-    }
+    window.operadorActivo = user.email;
+
+    mostrarDashboard();
+    cerrarSidebarEnMovil?.();
+
+} else {
+    // 🔒 USUARIO NO LOGUEADO
+    loggedInElements.forEach(el => el.classList.add("hidden"));
+
+    sidebar.classList.add("hidden");
+    sidebar.classList.remove("active"); // 🔥 importante
+    hamburger.classList.add("hidden");
+
+    window.operadorActivo = null;
+    window.inspeccionActualId = null;
+    window.inspeccionActualData = null;
+
+    mostrarLogin();
+}
 });
 
 /* ================= MODALES AUTH ================= */

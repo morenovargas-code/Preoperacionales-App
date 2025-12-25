@@ -1,9 +1,9 @@
 :root {
-    --navbar-height: 64px;
+    --navbar-height: 96px;
 }
 
 /* =========================
-   RESET RESPONSIVE CLAVE
+   RESET
 ========================= */
 html, body {
     overflow-x: hidden;
@@ -31,6 +31,10 @@ body, .navbar, .navbar-brand, * {
    NAVBAR
 ========================= */
 .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: var(--navbar-height);
     background: rgba(0,0,0,.75);
     backdrop-filter: blur(12px) saturate(150%);
     border-bottom: 2px solid rgba(255,255,255,.25);
@@ -40,18 +44,14 @@ body, .navbar, .navbar-brand, * {
 }
 
 /* =========================
-   TÍTULO (GLASS)
+   TÍTULO
 ========================= */
 .title-box {
     padding: 10px 25px;
     background: rgba(255,255,255,.05);
-    backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(12px);
     border-radius: 14px;
-    border-top: 2px solid rgba(255,255,255,.25);
-    border-bottom: 2px solid rgba(255,255,255,.25);
-    box-shadow:
-        0 8px 25px rgba(255,255,255,.15),
-        0 -8px 25px rgba(255,255,255,.15);
+    border: 2px solid rgba(255,255,255,.25);
 }
 
 .modern-title {
@@ -60,28 +60,6 @@ body, .navbar, .navbar-brand, * {
     letter-spacing: 2px;
     text-transform: uppercase;
     color: white !important;
-}
-
-/* =========================
-   BOTONES
-========================= */
-.btn-primary {
-    background: rgba(255,255,255,.12) !important;
-    border: 2px solid rgba(255,255,255,.7) !important;
-    color: white !important;
-    border-radius: 14px;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    box-shadow: 0 0 12px rgba(255,255,255,.35);
-    transition: all .3s ease;
-}
-
-.btn-primary:hover {
-    background: rgba(255,255,255,.25) !important;
-    box-shadow: 0 0 20px rgba(255,255,255,.9);
-    transform: scale(1.05);
 }
 
 /* =========================
@@ -94,7 +72,6 @@ body, .navbar, .navbar-brand, * {
     border-radius: 12px;
     padding: 10px 26px;
     font-weight: 600;
-    letter-spacing: 1px;
     backdrop-filter: blur(12px);
     transition: .3s ease;
 }
@@ -105,30 +82,29 @@ body, .navbar, .navbar-brand, * {
 }
 
 /* =========================
-   SIDEBAR
+   SIDEBAR (BASE)
 ========================= */
 .sidebar {
     position: fixed;
-    top: calc(var(--navbar-height) + 30px);
-    left: -280px;
+    top: 0;
+    left: 0;
     width: 260px;
-    height: calc(100vh - var(--navbar-height) - 40px);
+    height: 100vh;
+
+    /* 🔑 ESPACIO REAL DEL NAVBAR */
+    padding: calc(var(--navbar-height) + 20px) 20px 20px;
+
     background: rgba(0,0,0,.75);
     backdrop-filter: blur(12px) saturate(150%);
-    border: 2px solid rgba(255,255,255,.25);
-    border-radius: 18px;
-    padding: 22px 20px;
+    border-right: 2px solid rgba(255,255,255,.25);
+
     z-index: 1040;
     overflow-y: auto;
-    transition: left .35s ease;
-}
-
-.sidebar.active {
-    left: 20px;
+    transition: transform .35s ease;
 }
 
 /* =========================
-   SIDEBAR – OPCIONES
+   SIDEBAR OPCIONES
 ========================= */
 .sidebar ul {
     list-style: none;
@@ -136,7 +112,6 @@ body, .navbar, .navbar-brand, * {
     margin: 0;
 }
 
-/* OPCIÓN PRINCIPAL */
 .sidebar li {
     margin-bottom: 10px;
 }
@@ -149,96 +124,29 @@ body, .navbar, .navbar-brand, * {
     width: 100%;
     padding: 14px 18px;
     border-radius: 14px;
-
     background: linear-gradient(
         135deg,
-        rgba(255,255,255,0.06),
-        rgba(255,255,255,0.02)
+        rgba(255,255,255,.08),
+        rgba(255,255,255,.02)
     );
-
-    border: 1px solid rgba(255,255,255,0.18);
-    color: rgba(255,255,255,0.85);
-
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.85);
     font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.4px;
-
-    text-decoration: none;
     cursor: pointer;
-
-    backdrop-filter: blur(14px);
-    transition: all .25s ease;
+    transition: .25s ease;
 }
 
-/* ICONOS */
-.sidebar a i,
-.sidebar button i {
-    font-size: 18px;
-    opacity: 0.8;
-}
-
-/* HOVER REAL */
 .sidebar a:hover,
 .sidebar button:hover {
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.22),
-        rgba(255,255,255,0.10)
-    );
+    background: rgba(255,255,255,.22);
     color: white;
     transform: translateX(6px);
-    box-shadow: 0 6px 18px rgba(0,0,0,.35);
 }
 
-/* CLICK (FEEDBACK) */
-.sidebar a:active,
-.sidebar button:active {
-    transform: scale(0.96);
-}
-
-/* SELECCIONADO */
 .sidebar .active {
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.35),
-        rgba(255,255,255,0.15)
-    ) !important;
-
-    color: #fff;
-    box-shadow: 0 0 22px rgba(255,255,255,.45);
-}
-
-/* =========================
-   SUBMENÚ (LÍNEAS)
-========================= */
-.sidebar .submenu {
-    margin-top: 6px;
-    padding-left: 12px;
-}
-
-.sidebar .submenu a {
-    padding: 12px 16px;
-    font-size: 14px;
-    font-weight: 500;
-
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-
-    color: rgba(255,255,255,0.75);
-}
-
-/* Hover submenú */
-.sidebar .submenu a:hover {
-    background: rgba(255,255,255,0.18);
-    color: white;
-    transform: translateX(8px);
-}
-
-/* Submenú activo */
-.sidebar .submenu .active {
-    background: rgba(255,255,255,0.28);
-    box-shadow: 0 0 14px rgba(255,255,255,.35);
+    background: rgba(255,255,255,.35);
+    box-shadow: 0 0 18px rgba(255,255,255,.45);
 }
 
 /* =========================
@@ -246,8 +154,8 @@ body, .navbar, .navbar-brand, * {
 ========================= */
 .hamburger {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 22px;
+    left: 22px;
     z-index: 1100;
     background: rgba(0,0,0,.75);
     border: 2px solid rgba(255,255,255,.5);
@@ -258,403 +166,52 @@ body, .navbar, .navbar-brand, * {
 }
 
 /* =========================
-   BARRA DE ESTADO
+   MAIN CONTENT
 ========================= */
-.status-bar {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 20px;
-    width: 100%;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px) saturate(150%);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 14px;
-}
-
-.status-divider {
-    width: 1px;
-    height: 22px;
-    background: rgba(255,255,255,0.35);
+#main-content {
+    margin-top: var(--navbar-height);
+    padding: 30px;
 }
 
 /* =========================
-   CHECKLIST RESPONSIVE
+   DESKTOP
 ========================= */
-.checklist-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-@media (max-width: 768px) {
-    .checklist-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+@media (min-width: 993px) {
+    .sidebar {
+        transform: translateX(0);
     }
 
-    .checklist-item > div:first-child {
-        width: 100% !important;
+    #main-content {
+        margin-left: 280px;
     }
 
-    .checklist-item .btn-group {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .checklist-item .btn {
-        flex: 1;
+    .hamburger {
+        display: none;
     }
 }
 
 /* =========================
-   RESPONSIVE GENERAL
-========================= */
-:root {
-    --navbar-height: 64px;
-}
-
-/* =========================
-   RESET RESPONSIVE CLAVE
-========================= */
-html, body {
-    overflow-x: hidden;
-}
-
-/* =========================
-   FONDO
-========================= */
-body {
-    background:
-        linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
-        url("https://lh3.googleusercontent.com/d/1rNeQL3Gag1JtRfep7FS2WU-V-rfuaRxV")
-        no-repeat center center fixed;
-    background-size: cover;
-}
-
-/* =========================
-   TIPOGRAFÍA
-========================= */
-body, .navbar, .navbar-brand, * {
-    font-family: 'Playfair Display', serif !important;
-}
-
-/* =========================
-   NAVBAR
-========================= */
-.navbar {
-    background: rgba(0,0,0,.75);
-    backdrop-filter: blur(12px) saturate(150%);
-    border-bottom: 2px solid rgba(255,255,255,.25);
-    box-shadow: 0 8px 25px rgba(255,255,255,.15);
-    z-index: 1050;
-    padding: 12px 30px;
-}
-
-/* =========================
-   TÍTULO (GLASS)
-========================= */
-.title-box {
-    padding: 10px 25px;
-    background: rgba(255,255,255,.05);
-    backdrop-filter: blur(12px) saturate(150%);
-    border-radius: 14px;
-    border-top: 2px solid rgba(255,255,255,.25);
-    border-bottom: 2px solid rgba(255,255,255,.25);
-    box-shadow:
-        0 8px 25px rgba(255,255,255,.15),
-        0 -8px 25px rgba(255,255,255,.15);
-}
-
-.modern-title {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: white !important;
-}
-
-/* =========================
-   BOTONES
-========================= */
-.btn-primary {
-    background: rgba(255,255,255,.12) !important;
-    border: 2px solid rgba(255,255,255,.7) !important;
-    color: white !important;
-    border-radius: 14px;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    box-shadow: 0 0 12px rgba(255,255,255,.35);
-    transition: all .3s ease;
-}
-
-.btn-primary:hover {
-    background: rgba(255,255,255,.25) !important;
-    box-shadow: 0 0 20px rgba(255,255,255,.9);
-    transform: scale(1.05);
-}
-
-/* =========================
-   BOTÓN SALIR
-========================= */
-.exit-btn {
-    background: rgba(255,255,255,.12);
-    border: 2px solid rgba(255,255,255,.5);
-    color: white;
-    border-radius: 12px;
-    padding: 10px 26px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    backdrop-filter: blur(12px);
-    transition: .3s ease;
-}
-
-.exit-btn:hover {
-    background: rgba(255,255,255,.25);
-    transform: scale(1.07);
-}
-
-/* =========================
-   SIDEBAR
-========================= */
-.sidebar {
-    position: fixed;
-    top: calc(var(--navbar-height) + 30px);
-    left: 20px; /* ✅ VISIBLE EN DESKTOP */
-    width: 260px;
-    height: calc(100vh - var(--navbar-height) - 40px);
-    background: rgba(0,0,0,.75);
-    backdrop-filter: blur(12px) saturate(150%);
-    border: 2px solid rgba(255,255,255,.25);
-    border-radius: 18px;
-    padding: 22px 20px;
-    z-index: 1040;
-    overflow-y: auto;
-    transition: left .35s ease;
-}
-
-.sidebar.active {
-    left: 20px;
-}
-
-/* =========================
-   SIDEBAR – OPCIONES
-========================= */
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* OPCIÓN PRINCIPAL */
-.sidebar li {
-    margin-bottom: 10px;
-}
-
-.sidebar a,
-.sidebar button {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    width: 100%;
-    padding: 14px 18px;
-    border-radius: 14px;
-
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.06),
-        rgba(255,255,255,0.02)
-    );
-
-    border: 1px solid rgba(255,255,255,0.18);
-    color: rgba(255,255,255,0.85);
-
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-
-    text-decoration: none;
-    cursor: pointer;
-
-    backdrop-filter: blur(14px);
-    transition: all .25s ease;
-}
-
-/* ICONOS */
-.sidebar a i,
-.sidebar button i {
-    font-size: 18px;
-    opacity: 0.8;
-}
-
-/* HOVER REAL */
-.sidebar a:hover,
-.sidebar button:hover {
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.22),
-        rgba(255,255,255,0.10)
-    );
-    color: white;
-    transform: translateX(6px);
-    box-shadow: 0 6px 18px rgba(0,0,0,.35);
-}
-
-/* CLICK (FEEDBACK) */
-.sidebar a:active,
-.sidebar button:active {
-    transform: scale(0.96);
-}
-
-/* SELECCIONADO */
-.sidebar .active {
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.35),
-        rgba(255,255,255,0.15)
-    ) !important;
-
-    color: #fff;
-    box-shadow: 0 0 22px rgba(255,255,255,.45);
-}
-
-/* =========================
-   SUBMENÚ (LÍNEAS)
-========================= */
-.sidebar .submenu {
-    margin-top: 6px;
-    padding-left: 12px;
-}
-
-.sidebar .submenu a {
-    padding: 12px 16px;
-    font-size: 14px;
-    font-weight: 500;
-
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-
-    color: rgba(255,255,255,0.75);
-}
-
-/* Hover submenú */
-.sidebar .submenu a:hover {
-    background: rgba(255,255,255,0.18);
-    color: white;
-    transform: translateX(8px);
-}
-
-/* Submenú activo */
-.sidebar .submenu .active {
-    background: rgba(255,255,255,0.28);
-    box-shadow: 0 0 14px rgba(255,255,255,.35);
-}
-
-/* =========================
-   HAMBURGER
-========================= */
-.hamburger {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1100;
-    background: rgba(0,0,0,.75);
-    border: 2px solid rgba(255,255,255,.5);
-    color: white;
-    border-radius: 12px;
-    padding: 10px 14px;
-    display: none;
-}
-
-/* =========================
-   BARRA DE ESTADO
-========================= */
-.status-bar {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 20px;
-    width: 100%;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px) saturate(150%);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 14px;
-}
-
-.status-divider {
-    width: 1px;
-    height: 22px;
-    background: rgba(255,255,255,0.35);
-}
-
-/* =========================
-   CHECKLIST RESPONSIVE
-========================= */
-.checklist-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-@media (max-width: 768px) {
-    .checklist-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .checklist-item > div:first-child {
-        width: 100% !important;
-    }
-
-    .checklist-item .btn-group {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .checklist-item .btn {
-        flex: 1;
-    }
-}
-
-/* =========================
-   RESPONSIVE GENERAL
+   MOBILE
 ========================= */
 @media (max-width: 992px) {
     .sidebar {
-        top: var(--navbar-height);
-        left: -100%;
-        width: 260px;
-        height: calc(100vh - var(--navbar-height));
-        border-radius: 0 18px 18px 0;
-        opacity: 1;
-        pointer-events: auto;
+        transform: translateX(-100%);
     }
 
     .sidebar.active {
-        left: 0;
+        transform: translateX(0);
     }
 
-
-    .hamburger {
-    display: none;
-}
-
-@media (max-width: 992px) {
     .hamburger {
         display: inline-flex;
         align-items: center;
         justify-content: center;
     }
 }
-}
 
+/* =========================
+   EXTRA SMALL
+========================= */
 @media (max-width: 576px) {
     .modern-title {
         font-size: 20px;
@@ -666,17 +223,8 @@ body, .navbar, .navbar-brand, * {
         padding: 8px 16px;
     }
 }
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 
-.hamburger {
-    position: relative;
-    top: 0;
-    left: 0;
-}
+
 
 
 

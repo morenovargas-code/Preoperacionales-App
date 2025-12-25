@@ -264,6 +264,95 @@ body, .navbar, .navbar-brand, * {
     transform: translateX(-50%);
     white-space: nowrap;
 }
+/* =========================
+   DASHBOARD HERO
+========================= */
+.dashboard-hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - var(--navbar-height));
+    padding: 30px;
+}
+
+/* Tarjeta principal */
+.hero-card {
+    max-width: 520px;
+    width: 100%;
+    padding: 40px 30px;
+
+    background: rgba(255,255,255,.08);
+    backdrop-filter: blur(16px) saturate(160%);
+    border-radius: 22px;
+
+    border: 2px solid rgba(255,255,255,.25);
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        inset 0 0 20px rgba(255,255,255,.08);
+
+    text-align: center;
+}
+
+/* Ícono */
+.hero-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    box-shadow: 0 0 18px rgba(255,255,255,.35);
+}
+
+.hero-icon i {
+    font-size: 36px;
+    color: white;
+}
+
+/* Título */
+.hero-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+}
+
+.hero-title span {
+    display: block;
+    font-size: 22px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+/* Subtítulo */
+.hero-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,.8);
+    margin-top: 10px;
+}
+
+/* =========================
+   MOBILE DASHBOARD
+========================= */
+@media (max-width: 576px) {
+    .hero-card {
+        padding: 30px 22px;
+    }
+
+    .hero-title {
+        font-size: 22px;
+    }
+
+    .hero-title span {
+        font-size: 18px;
+    }
+}
+
+
 
 
 

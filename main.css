@@ -1,5 +1,6 @@
 :root {
     --navbar-height: 96px;
+    --navbar-item-height: 52px;
 }
 
 /* =========================
@@ -23,7 +24,7 @@ body {
 /* =========================
    TIPOGRAFÍA
 ========================= */
-body, .navbar, .navbar-brand, * {
+body, .navbar, * {
     font-family: 'Playfair Display', serif !important;
 }
 
@@ -35,84 +36,105 @@ body, .navbar, .navbar-brand, * {
     top: 0;
     width: 100%;
     height: var(--navbar-height);
+
     background: rgba(0,0,0,.75);
     backdrop-filter: blur(12px) saturate(150%);
     border-bottom: 2px solid rgba(255,255,255,.25);
     box-shadow: 0 8px 25px rgba(255,255,255,.15);
     z-index: 1050;
-    padding: 12px 30px;
 
-    /* 🔑 LAYOUT */
-    display: flex;
+    padding: 0 24px;
+
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
 }
 
 /* =========================
-   NAVBAR SECCIONES
+   HAMBURGER
 ========================= */
-.nav-left,
-.nav-center,
-.nav-right {
-    display: flex;
+.hamburger {
+    height: var(--navbar-item-height);
+    width: var(--navbar-item-height);
+
+    background: rgba(0,0,0,.75);
+    border: 2px solid rgba(255,255,255,.5);
+    color: white;
+    border-radius: 14px;
+
+    display: none;
     align-items: center;
-}
-
-.nav-center {
-    flex: 1;
     justify-content: center;
-}
 
-.nav-left {
-    min-width: 48px;
-}
-
-.nav-right {
-    min-width: 90px;
-    justify-content: flex-end;
+    cursor: pointer;
 }
 
 /* =========================
    TÍTULO
 ========================= */
 .title-box {
-    padding: 10px 25px;
+    height: var(--navbar-item-height);
+    padding: 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     background: rgba(255,255,255,.05);
     backdrop-filter: blur(12px);
     border-radius: 14px;
     border: 2px solid rgba(255,255,255,.25);
+
+    justify-self: center;
 }
 
 .modern-title {
-    font-size: 32px;
+    font-size: 26px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: white !important;
+    color: white;
+    line-height: 1;
 }
 
 /* =========================
    BOTÓN SALIR
 ========================= */
 .exit-btn {
+    height: var(--navbar-item-height);
+    padding: 0 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     background: rgba(255,255,255,.12);
     border: 2px solid rgba(255,255,255,.5);
     color: white;
-    border-radius: 12px;
-    padding: 10px 26px;
+    border-radius: 14px;
     font-weight: 600;
+
     backdrop-filter: blur(12px);
-    transition: .3s ease;
+    transition: .25s ease;
 }
 
 .exit-btn:hover {
     background: rgba(255,255,255,.25);
-    transform: scale(1.07);
+    transform: scale(1.05);
 }
 
 /* =========================
-   SIDEBAR (BASE)
+   SIDEBAR
 ========================= */
+/* =========================
+   SIDEBAR
+========================= */
+
+/* 🔐 NUEVO — Sidebar oculto por defecto (sin sesión) */
+.sidebar {
+    transform: translateX(-100%);
+}
+
 .sidebar {
     position: fixed;
     top: 0;
@@ -131,9 +153,11 @@ body, .navbar, .navbar-brand, * {
     transition: transform .35s ease;
 }
 
-/* =========================
-   SIDEBAR OPCIONES
-========================= */
+/* 🔐 NUEVO — Sidebar visible SOLO con sesión */
+body.logged-in .sidebar {
+    transform: translateX(0);
+}
+
 .sidebar ul {
     list-style: none;
     padding: 0;
@@ -152,15 +176,18 @@ body, .navbar, .navbar-brand, * {
     width: 100%;
     padding: 14px 18px;
     border-radius: 14px;
+
     background: linear-gradient(
         135deg,
         rgba(255,255,255,.08),
         rgba(255,255,255,.02)
     );
+
     border: 1px solid rgba(255,255,255,.18);
     color: rgba(255,255,255,.85);
     font-size: 15px;
     font-weight: 600;
+
     cursor: pointer;
     transition: .25s ease;
 }
@@ -178,23 +205,6 @@ body, .navbar, .navbar-brand, * {
 }
 
 /* =========================
-   HAMBURGER
-========================= */
-.hamburger {
-    background: rgba(0,0,0,.75);
-    border: 2px solid rgba(255,255,255,.5);
-    color: white;
-    border-radius: 12px;
-    padding: 10px 14px;
-
-    display: none;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-}
-
-/* =========================
    MAIN CONTENT
 ========================= */
 #main-content {
@@ -206,8 +216,14 @@ body, .navbar, .navbar-brand, * {
    DESKTOP
 ========================= */
 @media (min-width: 993px) {
-    .sidebar {
+
+    /* 🔐 NUEVO — Desktop solo muestra sidebar si hay sesión */
+    body.logged-in .sidebar {
         transform: translateX(0);
+    }
+
+    body:not(.logged-in) .sidebar {
+        transform: translateX(-100%);
     }
 
     #main-content {
@@ -223,16 +239,18 @@ body, .navbar, .navbar-brand, * {
    MOBILE
 ========================= */
 @media (max-width: 992px) {
-    .sidebar {
+
+    /* 🔐 NUEVO — En móvil siempre cerrado, incluso con sesión */
+    body.logged-in .sidebar {
         transform: translateX(-100%);
     }
 
-    .sidebar.active {
+    body.logged-in .sidebar.active {
         transform: translateX(0);
     }
 
     .hamburger {
-        display: inline-flex;
+        display: flex;
     }
 }
 
@@ -241,29 +259,20 @@ body, .navbar, .navbar-brand, * {
 ========================= */
 @media (max-width: 576px) {
     .modern-title {
-        font-size: 20px;
+        font-size: 18px;
         letter-spacing: 1px;
+    }
+
+    .title-box {
+        padding: 0 16px;
     }
 
     .exit-btn {
         font-size: 14px;
-        padding: 8px 16px;
+        padding: 0 16px;
     }
 }
-/* =========================
-   NAVBAR FIX MOBILE
-========================= */
-.navbar {
-    position: fixed;
-}
 
-/* El contenedor del título se centra absoluto */
-.title-box {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-}
 /* =========================
    DASHBOARD HERO
 ========================= */
@@ -275,7 +284,6 @@ body, .navbar, .navbar-brand, * {
     padding: 30px;
 }
 
-/* Tarjeta principal */
 .hero-card {
     max-width: 520px;
     width: 100%;
@@ -293,7 +301,6 @@ body, .navbar, .navbar-brand, * {
     text-align: center;
 }
 
-/* Ícono */
 .hero-icon {
     width: 80px;
     height: 80px;
@@ -313,7 +320,6 @@ body, .navbar, .navbar-brand, * {
     color: white;
 }
 
-/* Título */
 .hero-title {
     font-size: 26px;
     font-weight: 700;
@@ -325,10 +331,9 @@ body, .navbar, .navbar-brand, * {
     display: block;
     font-size: 22px;
     font-weight: 600;
-    opacity: 0.9;
+    opacity: .9;
 }
 
-/* Subtítulo */
 .hero-subtitle {
     font-size: 16px;
     color: rgba(255,255,255,.8);
@@ -336,20 +341,44 @@ body, .navbar, .navbar-brand, * {
 }
 
 /* =========================
-   MOBILE DASHBOARD
+   PREOPERACIONAL CARDS
 ========================= */
-@media (max-width: 576px) {
-    .hero-card {
-        padding: 30px 22px;
-    }
+.preop-item {
+    background: rgba(255,255,255,.08);
+    backdrop-filter: blur(14px) saturate(160%);
+    border-radius: 22px;
+    border: 2px solid rgba(255,255,255,.25);
 
-    .hero-title {
-        font-size: 22px;
-    }
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.45),
+        inset 0 0 20px rgba(255,255,255,.05);
 
-    .hero-title span {
-        font-size: 18px;
-    }
+    transition: all .35s ease;
+}
+
+.preop-item h3 {
+    color: white;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.preop-item p {
+    color: rgba(255,255,255,.75) !important;
+}
+
+.preop-item:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.6),
+        0 0 25px rgba(255,255,255,.35);
+}
+
+.preop-amarilla {
+    border-color: rgba(255,193,7,.6);
+}
+
+.preop-blanca {
+    border-color: rgba(13,202,240,.6);
 }
 
 

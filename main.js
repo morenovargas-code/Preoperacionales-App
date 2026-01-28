@@ -35,9 +35,7 @@ window.inspeccionActualId = null;
 window.inspeccionActualData = null;
 
 const hamburger = document.getElementById("hamburger");
-    /* 🔒 ESTADO INICIAL BLOQUEADO */
-    sidebar.classList.add("hidden");
-    hamburger.classList.add("hidden");
+  
 
   hamburger.addEventListener("click", () => {
     if (!window.operadorActivo) return; // 🔒 sin sesión no hace nada
@@ -46,33 +44,45 @@ const hamburger = document.getElementById("hamburger");
 
 /* ================= AUTH ================= */
 onAuthStateChanged(auth, (user) => {
-   if (user) {
-    // 🔓 USUARIO LOGUEADO
+  if (user) {
+    // 🔓 LOGUEADO
+    document.body.classList.add("logged-in");
+
     loggedInElements.forEach(el => el.classList.remove("hidden"));
 
-    sidebar.classList.remove("hidden");
-    hamburger.classList.remove("hidden");
-
+    // 🔹 SE MANTIENE (correo para backend si lo necesitas)
     window.operadorActivo = user.email;
 
-    mostrarDashboard();
-    cerrarSidebarEnMovil?.();
+    // ✅ NUEVO: nombre limpio del operador
+    const nombreOperador = user.displayName
+      ? user.displayName
+      : obtenerNombreDesdeEmail(user.email);
 
-} else {
-    // 🔒 USUARIO NO LOGUEADO
+    // ✅ VARIABLE GLOBAL PARA TODA LA APP
+    window.nombreOperador = nombreOperador;
+
+    // ✅ Mostrar nombre en navbar (si existe)
+    const navbarNombre = document.getElementById("nombreOperadorNavbar");
+    if (navbarNombre) navbarNombre.textContent = nombreOperador;
+
+    mostrarDashboard();
+
+  } else {
+    // 🔒 NO LOGUEADO
+    document.body.classList.remove("logged-in");
+
     loggedInElements.forEach(el => el.classList.add("hidden"));
 
-    sidebar.classList.add("hidden");
-    sidebar.classList.remove("active"); // 🔥 importante
-    hamburger.classList.add("hidden");
+    sidebar.classList.remove("active"); // móvil
 
     window.operadorActivo = null;
-    window.inspeccionActualId = null;
-    window.inspeccionActualData = null;
+    window.nombreOperador = null; // 🔹 limpio
 
     mostrarLogin();
-}
+  }
 });
+
+
 
 /* ================= MODALES AUTH ================= */
 document.getElementById("ingresar-form").addEventListener("submit", async (e) => {
@@ -114,20 +124,23 @@ document.querySelectorAll(".list-group-item").forEach(item => {
 
 function ejecutarAccionSidebar(accion) {
 
+    // 🔹 Marcar opción activa
     document.querySelectorAll(".list-group-item")
         .forEach(el => el.classList.remove("active"));
 
     const activo = document.querySelector(`[data-action="${accion}"]`);
     activo?.classList.add("active");
 
+    // 🔹 Navegación
     if (accion === "dashboard") mostrarDashboard();
     else if (accion === "preoperacional") mostrarMenuPreoperacional();
     else if (accion === "equipos") mostrarEquipos();
     else if (accion === "reportes") mostrarReportes();
 
-    // 🔥 CIERRA SIDEBAR EN MÓVIL
+    // 🔥 CERRAR SIDEBAR SOLO EN MÓVIL
     if (window.innerWidth <= 992) {
-        sidebar.classList.remove("active");
+        const sidebar = document.querySelector(".sidebar");
+        sidebar?.classList.remove("active");
     }
 }
 
@@ -155,26 +168,35 @@ function mostrarDashboard() {
     `;
 }
 
+
 /* ================= PREOPERACIONAL ================= */
 function mostrarMenuPreoperacional() {
     const main = document.getElementById("main-content");
     main.style.zIndex = "1";
-    mainContent.innerHTML = `
-        <button class="btn btn-outline-secondary mb-4" onclick="mostrarDashboard()"><i class="bi bi-arrow-left"></i> Dashboard</button>
-        <h2 class="mb-5 text-info"><i class="bi bi-clipboard-check"></i> Preoperacional</h2>
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card border-warning h-100 p-5 text-center preop-item" id="amarilla" style="cursor:pointer; transition: all 0.3s;">
+
+    main.innerHTML = `
+        <button class="exit-btn mb-4" onclick="mostrarDashboard()">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </button>
+
+        <h2 class="mb-5 text-info text-center">
+            <i class="bi bi-clipboard-check"></i> Preoperacional
+        </h2>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="preop-item preop-amarilla p-5 text-center" id="amarilla">
                     <i class="bi bi-gear-fill fs-1 mb-4 text-warning"></i>
                     <h3>Línea Amarilla</h3>
-                    <p class="text-muted lead">Maquinaria pesada</p>
+                    <p class="lead">Maquinaria pesada</p>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card border-info h-100 p-5 text-center preop-item" id="blanca" style="cursor:pointer; transition: all 0.3s;">
+
+            <div class="col-md-5">
+                <div class="preop-item preop-blanca p-5 text-center" id="blanca">
                     <i class="bi bi-truck fs-1 mb-4 text-info"></i>
                     <h3>Línea Blanca</h3>
-                    <p class="text-muted lead">Vehículos</p>
+                    <p class="lead">Vehículos</p>
                 </div>
             </div>
         </div>
@@ -247,7 +269,7 @@ function renderFormularioPreoperacional({ titulo, checklistHTML }) {
 
         <div class="card bg-dark text-light border-0 mb-4 p-4 rounded-4 shadow">
             <h5 class="text-warning mb-4"><i class="bi bi-list-check"></i> Checklist</h5>
-            <div style="max-height: 450px; overflow: auto;">
+            <div style="max-height: 450px; overflow: auto;" id="checklist">
                 ${checklistHTML}
             </div>
         </div>
@@ -279,42 +301,55 @@ function renderFormularioPreoperacional({ titulo, checklistHTML }) {
 
     document.getElementById("volver").onclick = mostrarMenuPreoperacional;
     document.getElementById("guardar-inspeccion").onclick = guardarInspeccion;
+
+    // 🔒 ESTADO INICIAL
+    const btnGuardar = document.getElementById("guardar-inspeccion");
+    btnGuardar.disabled = true;
+    btnGuardar.classList.add("btn-secondary");
+
+    // ✅ 🔥 AQUÍ SE CONECTA LA VALIDACIÓN A LOS RADIOS
+    document
+        .querySelectorAll('#checklist input[type="radio"]')
+        .forEach(radio => {
+            radio.addEventListener("change", validarChecklistEnTiempoReal);
+        });
 }
 
-/* ================= CHECKLISTS ================= */
+/* ================= CHECKLIST BASE ================= */
 function crearChecklist(items) {
-    return items.map(item => {
-        const n = item
+    window.itemsChecklist = []; // 🔑 lista maestra de ítems
+
+    return items.map(texto => {
+
+        const name = texto
             .toLowerCase()
-            .replace(/[^\w\s]/g, "_")
-            .replace(/\s+/g, "_");
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^\w]+/g, "_")
+            .replace(/^_|_$/g, "");
+
+        window.itemsChecklist.push(name);
 
         return `
         <div class="d-flex justify-content-between align-items-center checklist-item py-3 border-bottom border-secondary border-opacity-25">
 
             <div class="checklist-text">
-                ${item}
+                ${texto}
             </div>
 
             <div class="btn-group btn-group-sm checklist-actions" role="group">
 
-                <input class="btn-check" type="radio" name="${n}" id="${n}_b" value="B">
-                <label class="btn btn-outline-success d-flex align-items-center gap-1"
-                       for="${n}_b">
-                    <i class="bi bi-check-lg"></i>
-                    <span>B</span>
+                <input class="btn-check" type="radio" name="${name}" id="${name}_b" value="B">
+                <label class="btn btn-outline-success d-flex align-items-center gap-1" for="${name}_b">
+                    <i class="bi bi-check-lg"></i><span>B</span>
                 </label>
 
-                <input class="btn-check" type="radio" name="${n}" id="${n}_m" value="M">
-                <label class="btn btn-outline-danger d-flex align-items-center gap-1"
-                       for="${n}_m">
-                    <i class="bi bi-x-lg"></i>
-                    <span>M</span>
+                <input class="btn-check" type="radio" name="${name}" id="${name}_m" value="M">
+                <label class="btn btn-outline-danger d-flex align-items-center gap-1" for="${name}_m">
+                    <i class="bi bi-x-lg"></i><span>M</span>
                 </label>
 
-                <input class="btn-check" type="radio" name="${n}" id="${n}_na" value="NA">
-                <label class="btn btn-outline-secondary d-flex align-items-center gap-1"
-                       for="${n}_na">
+                <input class="btn-check" type="radio" name="${name}" id="${name}_na" value="NA">
+                <label class="btn btn-outline-secondary d-flex align-items-center gap-1" for="${name}_na">
                     <span>N/A</span>
                 </label>
 
@@ -432,6 +467,50 @@ function crearChecklistLineaBlanca() {
     ]);
 }
 
+function validarChecklistEnTiempoReal() {
+    const checklist = {};
+    document.querySelectorAll("input[type=radio]:checked")
+        .forEach(r => checklist[r.name] = r.value);
+
+    const itemsTotales = window.itemsChecklist || [];
+    const faltantes = obtenerItemsFaltantes(checklist, itemsTotales);
+
+    const btnGuardar = document.getElementById("guardar-inspeccion");
+
+    if (faltantes.length === 0) {
+        btnGuardar.disabled = false;
+        btnGuardar.classList.remove("btn-secondary");
+        btnGuardar.classList.add("btn-success");
+        btnGuardar.title = "Checklist completo";
+    } else {
+        btnGuardar.disabled = true;
+        btnGuardar.classList.remove("btn-success");
+        btnGuardar.classList.add("btn-secondary");
+        btnGuardar.title = `Faltan ${faltantes.length} ítems por diligenciar`;
+    }
+}
+document.getElementById("guardar-inspeccion").disabled = true;
+document.getElementById("guardar-inspeccion").classList.add("btn-secondary");
+
+function checklistCompleto(checklist, items) {
+    if (!checklist) return false;
+
+    return items.every(item =>
+        checklist[item] === "B" ||
+        checklist[item] === "M" ||
+        checklist[item] === "NA"
+    );
+}
+function obtenerItemsFaltantes(checklist, items) {
+    if (!checklist) return items;
+    return items.filter(item =>
+        checklist[item] !== "B" &&
+        checklist[item] !== "M" &&
+        checklist[item] !== "NA"
+    );
+}
+
+
 /* ================= GUARDAR INSPECCIÓN ================= */
 async function guardarInspeccion() {
     try {
@@ -460,7 +539,7 @@ async function guardarInspeccion() {
             return;
         }
 
-        document.getElementById("guardar-inspeccion").innerHTML = '<i class="bi bi-hourglass-split spinner-border spinner-border-sm me-2"></i> Guardando...';
+        document.getElementById("guardar-inspeccion").innerHTML ='<span class="spinner-border spinner-border-sm me-2" role="status"></span> Guardando...';
 
         const data = {
             equipo: {
@@ -506,6 +585,13 @@ async function generarPDF(id = null) {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF("landscape", "mm", "a4");
 
+        // 🔧 FIX CLAVE — Normalizar fechas
+        function normalizarFecha(d) {
+            const f = new Date(d);
+            f.setHours(0, 0, 0, 0);
+            return f;
+        }
+
         // OBTENER DATOS BASE
         let dataBase;
         if (id) {
@@ -522,16 +608,21 @@ async function generarPDF(id = null) {
         }
 
         const cema = dataBase.equipo.cema;
-        const fechaInspeccion = dataBase.fecha?.toDate ? dataBase.fecha.toDate() : new Date();
+        const fechaInspeccion = normalizarFecha(
+            dataBase.fecha?.toDate ? dataBase.fecha.toDate() : new Date()
+        );
 
         // Utilidades fecha
         function obtenerSemanaDesdeFecha(fecha) {
-            const base = new Date(fecha);
+            const base = normalizarFecha(fecha);
             const lunes = new Date(base);
             lunes.setDate(base.getDate() - base.getDay() + 1);
+            lunes.setHours(0, 0, 0, 0);
+
             return Array.from({ length: 7 }, (_, i) => {
                 const d = new Date(lunes);
                 d.setDate(lunes.getDate() + i);
+                d.setHours(0, 0, 0, 0);
                 return d;
             });
         }
@@ -545,12 +636,17 @@ async function generarPDF(id = null) {
         // QUERY SIMPLE
         const q = query(collection(db, window.coleccion), where("equipo.cema", "==", cema));
         const snap = await getDocs(q);
+
         const inspeccionesSemana = snap.docs
-            .map(doc => ({ id: doc.id, data: doc.data(), fecha: doc.data().fecha?.toDate() || new Date() }))
-            .filter(i => Math.abs(Math.floor((fechaInspeccion - i.fecha) / (1000*60*60*24))) <= 7)
+            .map(doc => ({
+                id: doc.id,
+                data: doc.data(),
+                fecha: normalizarFecha(doc.data().fecha?.toDate() || new Date())
+            }))
+            .filter(i => Math.abs((fechaInspeccion - i.fecha) / (1000 * 60 * 60 * 24)) <= 7)
             .sort((a, b) => b.fecha - a.fecha);
 
-        // ✅ FIX HOY NO APARECE - AGREGAR PREOPERACIONAL ACTUAL
+        // ✅ FIX HOY NO APARECE — PREOPERACIONAL ACTUAL NORMALIZADO
         if (!id && window.inspeccionActualData) {
             inspeccionesSemana.unshift({
                 id: 'actual',
@@ -559,13 +655,12 @@ async function generarPDF(id = null) {
             });
         }
 
-        // ✅ FIX SEMANA COMPLETA - AGREGAR DÍAS VACÍOS
+        // ✅ FIX SEMANA COMPLETA — DÍAS VACÍOS
         semana.forEach(dia => {
-            const existeDia = inspeccionesSemana.some(i => 
-                i.fecha.getFullYear() === dia.getFullYear() &&
-                i.fecha.getMonth() === dia.getMonth() &&
-                i.fecha.getDate() === dia.getDate()
+            const existeDia = inspeccionesSemana.some(i =>
+                i.fecha.getTime() === dia.getTime()
             );
+
             if (!existeDia) {
                 inspeccionesSemana.push({
                     id: 'vacio',
@@ -574,146 +669,320 @@ async function generarPDF(id = null) {
                 });
             }
         });
+
         inspeccionesSemana.sort((a, b) => b.fecha - a.fecha);
 
         // ✅ FIX: tipoLinea seguro
         const tipoLinea = dataBase.tipoLinea || window.tipoLinea || "DESCONOCIDA";
-        
-        // ✅ NUEVO TITULO (ARriba)
+
+        // ===== TITULO =====
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(22);
         pdf.text("INSPECCION PREOPERACIONAL", 148, 18, { align: "center" });
         pdf.setFontSize(18);
         pdf.text(tipoLinea.toUpperCase(), 148, 25, { align: "center" });
-        
+
         pdf.setFontSize(14);
         pdf.text(`EQUIPO: ${cema}`, 148, 35, { align: "center" });
         pdf.setFontSize(12);
         pdf.text(`SEMANA | ${formatearFecha(semana[0])} - ${formatearFecha(semana[6])}`, 148, 43, { align: "center" });
 
-        // ✅ DATOS DEL EQUIPO COMPLETO (ARriba - FORMATO VERTICAL) - PROTEGIDO
-        let yPos = 55;
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(14);
-        pdf.text("DATOS DEL EQUIPO:", 20, yPos); yPos += 10;
-        
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(11);
-        pdf.text(`CEMA: ${dataBase.equipo.cema || "---"}`, 20, yPos); yPos += 8;
-        pdf.text(`COMEQ: ${dataBase.equipo.comeq || "---"}`, 20, yPos); yPos += 8;
-        pdf.text(`TIPO: ${dataBase.equipo.tipo || "---"}`, 20, yPos); yPos += 8;
-        pdf.text(`HOROMETRO: ${dataBase.equipo.horometro || "---"}`, 20, yPos); yPos += 8;
-        pdf.text(`UBICACION: ${dataBase.equipo.ubicacion || "---"}`, 20, yPos); yPos += 8;
-        pdf.text(`OPERADOR: ${dataBase.operador ? dataBase.operador.split("@")[0] : "---"}`, 20, yPos); yPos += 8;
-        pdf.text(`IPE: ${dataBase.ipe || "---"}`, 20, yPos);
+        // ===== DATOS DEL EQUIPO =====
+        const equipo = dataBase.equipo || {};
 
-        // ✅ VERIFICAR checklist existe
+        pdf.autoTable({
+            startY: 55,
+            theme: "grid",
+                styles: {
+                font: "helvetica",
+                fontSize: 10,
+                cellPadding: 4
+                },
+            head: [[
+            {
+                content: "DATOS DEL EQUIPO",
+                colSpan: 5,
+                styles: {
+                halign: "center",
+                fontSize: 13,
+                fontStyle: "bold",
+                fillColor: [40, 40, 40],
+                textColor: 255
+                }
+            }
+            ]],
+            body: [[
+            `CEMA: ${equipo.cema || "---"}`,
+            `COMEQ: ${equipo.comeq || "---"}`,
+            `TIPO: ${equipo.tipo || "---"}`,
+            `HORÓMETRO DIARIO: ${equipo.horometro || "---"}`,
+            `UBICACIÓN: ${equipo.ubicacion || "---"}` 
+            ],
+            [
+            `OPERADOR: ${dataBase.operador ? dataBase.operador.split("@")[0] : "---"}`,
+            `IPE: ${dataBase.ipe || "---"}`,
+            "",
+            "",
+            ""
+            ]]
+        });
+        let yPos = pdf.lastAutoTable.finalY + 10;
+
         if (!dataBase.checklist) {
             Toastify({ text: "Error: Checklist no encontrado", duration: 4000, gravity: "top", backgroundColor: "red" }).showToast();
             return;
         }
+        function checklistCompleto(checklist, items) {
+             if (!checklist) return false;
+             return items.every(item => ["B", "M", "NA"].includes(checklist[item]));
+        }
 
-        // TABLA CHECKLIST
-        const ESTADOS = { B: { text: "X", bg: [39, 174, 96], color: 255 }, M: { text: "X", bg: [192, 57, 43], color: 255 }, NA: { text: "X", bg: [189, 195, 199], color: 0 } };
+        // ===== TABLA =====
+        const ESTADOS = {
+            B: { text: "X", bg: [39, 174, 96], color: 255 },
+            M: { text: "X", bg: [192, 57, 43], color: 255 },
+            NA:{ text: "X", bg: [189, 195, 199], color: 0 }
+        };
 
-        const head1 = [{ content: "ITEM", rowSpan: 2 }];
+        const head1 = [{ content: "ITEM", rowSpan: 3 }];
         semana.forEach(d => head1.push({ content: formatearFecha(d), colSpan: 3, styles: { halign: "center" } }));
+        
+        const headHorometro = [];
+
+            semana.forEach(dia => {
+
+            const inspeccionDia = inspeccionesSemana.find(i =>
+            i.fecha.getTime() === dia.getTime()
+            );
+
+            const horometro = obtenerHorometro(inspeccionDia);
+
+            headHorometro.push({
+            content: horometro !== null ? horometro.toString() : "-",
+            colSpan: 3,
+            styles: {
+            halign: "center",
+            fontSize: 7,
+            textColor: [80, 80, 80]
+        }
+    });
+});
+const headIncremento = [];
+
+let horometroAnterior = null;
+
+semana.forEach(dia => {
+
+    const inspeccionDia = inspeccionesSemana.find(i =>
+        i.fecha.getTime() === dia.getTime()
+    );
+
+    const horometroActual = obtenerHorometro(inspeccionDia);
+
+    let texto = "-";
+    let styles = {
+        halign: "center",
+        fontSize: 7,
+        textColor: [120, 120, 120]
+    };
+
+    if (horometroActual !== null && horometroAnterior !== null) {
+        const diff = horometroActual - horometroAnterior;
+
+        if (diff >= 0) {
+            texto = `+${diff}`;
+            styles.textColor = [39, 174, 96]; // verde
+            styles.fontStyle = "bold";
+        } else {
+            texto = "⚠ BAJA";
+            styles.textColor = [192, 57, 43]; // rojo
+            styles.fontStyle = "bold";
+        }
+    }
+
+    if (horometroActual !== null) {
+        horometroAnterior = horometroActual;
+    }
+
+    headIncremento.push({
+        content: texto,
+        colSpan: 3,
+        styles
+    });
+});
         const head2 = semana.flatMap(() => ["B", "M", "NA"]);
 
-        // ✅ FIX: Usa checklist del dataBase actual + comparación de fecha EXACTA
         const items = Object.keys(dataBase.checklist);
         const rows = items.map(item => {
             const row = [item.replace(/_/g, " ").toUpperCase()];
+
             semana.forEach(dia => {
-                const inspeccionDia = inspeccionesSemana.find(i => {
-                    const fechaInspeccion = i.fecha;
-                    const fechaDia = dia;
-                    return fechaInspeccion.getFullYear() === fechaDia.getFullYear() &&
-                           fechaInspeccion.getMonth() === fechaDia.getMonth() &&
-                           fechaInspeccion.getDate() === fechaDia.getDate();
-                });
-                
+                const inspeccionDia = inspeccionesSemana.find(i =>
+                    i.fecha.getTime() === dia.getTime()
+                );
+
                 const estado = inspeccionDia ? inspeccionDia.data.checklist[item] : null;
                 ["B", "M", "NA"].forEach(k => {
-                    if (estado === k) {
-                        row.push({ 
-                            content: ESTADOS[k].text, 
-                            styles: { fillColor: ESTADOS[k].bg, textColor: ESTADOS[k].color, fontStyle: "bold" } 
-                        });
-                    } else {
-                        row.push("");
-                    }
+                    row.push(estado === k ? {
+                        content: ESTADOS[k].text,
+                        styles: { fillColor: ESTADOS[k].bg, textColor: ESTADOS[k].color, fontStyle: "bold" }
+                    } : "");
                 });
             });
+
             return row;
         });
+        
 
-        // Firma
-        const firma = [{ content: "FIRMA OPERADOR", styles: { fillColor: [52, 73, 94], fontStyle: "bold", halign: "center" } }];
-        semana.forEach(dia => {
-            const inspeccionDia = inspeccionesSemana.find(i => {
-                const fechaInspeccion = i.fecha;
-                const fechaDia = dia;
-                return fechaInspeccion.getFullYear() === fechaDia.getFullYear() &&
-                       fechaInspeccion.getMonth() === fechaDia.getMonth() &&
-                       fechaInspeccion.getDate() === fechaDia.getDate();
-            });
-            firma.push({
-                content: inspeccionDia && inspeccionDia.data.operador ? inspeccionDia.data.operador.split("@")[0] : "",
-                colSpan: 3,
-                styles: { fillColor: [236, 240, 241], halign: "center", fontStyle: "bold" }
-            });
-        });
-        rows.push(firma);
 
-        // ✅ TABLA CON SEPARADORES VISUALES PERFECTOS - columnStyles COMPLETO
-        pdf.autoTable({
-            startY: yPos + 15,
-            theme: "grid",
-            head: [head1, head2],
-            body: rows,
-            styles: { 
-                fontSize: 7, 
-                halign: "center", 
-                valign: "middle",
-                lineWidth: 0.5,
-                cellPadding: 2
-            },
-            headStyles: { 
-                fillColor: [41, 128, 185],
-                textColor: 255,
-                fontStyle: "bold",
-                fontSize: 8
-            },
-            columnStyles: {
-                0: { cellWidth: 45 },
-                1: { cellWidth: 28 }, 2: { cellWidth: 12 }, 3: { cellWidth: 12 }, 4: { cellWidth: 12 },
-                5: { cellWidth: 28 }, 6: { cellWidth: 12 }, 7: { cellWidth: 12 }, 8: { cellWidth: 12 },
-                9: { cellWidth: 28 },10: { cellWidth: 12 },11: { cellWidth: 12 },12: { cellWidth: 12 },
-                13: { cellWidth: 28 },14: { cellWidth: 12 },15: { cellWidth: 12 },16: { cellWidth: 12 },
-                17: { cellWidth: 28 },18: { cellWidth: 12 },19: { cellWidth: 12 },20: { cellWidth: 12 }
-            },
-            didDrawCell: function(data) {
-                if ([4,8,12,16,20].includes(data.column.index)) {
-                    pdf.setDrawColor(0);
-                    pdf.setLineWidth(1.5);
-                    pdf.line(
-                        data.cell.x + data.cell.width,
-                        data.cell.y,
-                        data.cell.x + data.cell.width,
-                        data.cell.y + data.cell.height
-                    );
-                }
-            }
-        });
 
-        pdf.save(`MOVA_Semanal_${cema}_${formatearFecha(semana[0])}.pdf`);
-        Toastify({ text: `✅ PDF SEMANAL (${inspeccionesSemana.length} días)`, duration: 4000, gravity: "top", backgroundColor: "green" }).showToast();
+    // ===== FILA FINAL DE FIRMAS =====
+const firmaRow = [{
+    content: "FIRMA OPERADOR",
+    styles: {
+        fillColor: [52,73,94],
+        textColor: 255,
+        fontStyle: "bold",
+        halign: "center"
+    }
+}];
+
+semana.forEach(dia => {
+    const inspeccionDia = inspeccionesSemana.find(i =>
+        i.fecha.getTime() === dia.getTime()
+    );
+
+    let textoFirma = "SIN REGISTRO";
+
+    if (inspeccionDia && inspeccionDia.data) {
+
+        const completo = checklistCompleto(
+            inspeccionDia.data.checklist,
+            items
+        );
+
+        if (!completo) {
+            textoFirma = "CHECKLIST INCOMPLETO";
+        } else if (inspeccionDia.data.operador) {
+            textoFirma = inspeccionDia.data.operador.split("@")[0];
+        }
+    }
+
+    firmaRow.push({
+        content: textoFirma,
+        colSpan: 3,
+        styles: {
+            fillColor:
+                textoFirma === "CHECKLIST INCOMPLETO"
+                    ? [255, 235, 238]
+                    : textoFirma === "SIN REGISTRO"
+                        ? [245, 245, 245]
+                        : [236, 240, 241],
+
+            textColor:
+                textoFirma === "CHECKLIST INCOMPLETO"
+                    ? [183, 28, 28]
+                    : textoFirma === "SIN REGISTRO"
+                        ? [120, 120, 120]
+                        : [0, 0, 0],
+
+            halign: "center",
+            valign: "middle",
+            fontStyle:
+                textoFirma === "CHECKLIST INCOMPLETO"
+                    ? "bold"
+                    : textoFirma === "SIN REGISTRO"
+                        ? "italic"
+                        : "bold",
+
+            fontSize: 7
+        }
+    });
+});
+
+// 🔽 AQUÍ SÍ FUNCIONA
+rows.push(firmaRow);
+  
+     pdf.autoTable({
+         startY: yPos + 15,
+          theme: "grid",
+
+    
+    head: [head1,headHorometro,headIncremento, head2],
+    body: rows,
+
+    styles: {
+        fontSize: 7,
+        halign: "center",
+        valign: "middle",
+        lineWidth: 0.5,
+        cellPadding: 2,
+        overflow: "linebreak"// 
+    },
+
+    headStyles: {
+        fillColor: [41,128,185],
+        textColor: 255,
+        fontStyle: "bold",
+        fontSize: 8
+    },
+
+    columnStyles: {
+    0: { cellWidth: 42, halign: "left" }, // ITEM
+
+    // Día 1
+    1: { cellWidth: 10 }, // B
+    2: { cellWidth: 10 }, // M
+    3: { cellWidth: 10 }, // NA
+
+    // Día 2
+    4: { cellWidth: 10 },
+    5: { cellWidth: 10 },
+    6: { cellWidth: 10 },
+
+    // Día 3
+    7: { cellWidth: 10 },
+    8: { cellWidth: 10 },
+    9: { cellWidth: 10 },
+
+    // Día 4
+    10:{ cellWidth: 10 },
+    11:{ cellWidth: 10 },
+    12:{ cellWidth: 10 },
+
+    // Día 5
+    13:{ cellWidth: 10 },
+    14:{ cellWidth: 10 },
+    15:{ cellWidth: 10 },
+
+    // Día 6
+    16:{ cellWidth: 10 },
+    17:{ cellWidth: 10 },
+    18:{ cellWidth: 10 },
+
+    // Día 7
+    19:{ cellWidth: 10 },
+    20:{ cellWidth: 10 },
+    21:{ cellWidth: 10 }
+}
+
+});
+
+
+pdf.save(`MOVA_Semanal_${cema}_${formatearFecha(semana[0])}.pdf`);
+Toastify({
+    text: "✅ PDF SEMANAL GENERADO CORRECTAMENTE",
+    duration: 4000,
+    gravity: "top",
+    backgroundColor: "green"
+}).showToast();
+
     } catch (error) {
-        console.error('Error PDF:', error);
-        Toastify({ text: `Error: ${error.message}`, duration: 5000, gravity: "top", backgroundColor: "red" }).showToast();
+        console.error("Error PDF:", error);
+        Toastify({ text: error.message, duration: 5000, gravity: "top", backgroundColor: "red" }).showToast();
     }
 }
+
 
 
 
@@ -778,8 +1047,11 @@ async function verHistorialEquipo(cema) {
         document.getElementById("lista-historial").innerHTML = 
             `<div class="alert alert-danger">Error: ${error.message}</div>`;
     }
+}function obtenerHorometro(inspeccion) {
+    const v = inspeccion?.data?.equipo?.horometro;
+    const n = Number(v);
+    return isNaN(n) ? null : n;
 }
-
 
 /* ================= OTROS MENÚS ================= */
 function mostrarEquipos() {
@@ -821,8 +1093,15 @@ function mostrarLogin() {
         </div>
     `;
 }
+function obtenerNombreDesdeEmail(email) {
+  return email
+    .split("@")[0]
+    .replace(/\./g, " ")
+    .replace(/\b\w/g, l => l.toUpperCase());
+}
 
 console.log("✅ Sistema MOVA cargado completamente - ¡Listo para usar!");
+
 
 
 

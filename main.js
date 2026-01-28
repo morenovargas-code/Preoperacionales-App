@@ -268,7 +268,7 @@ function renderFormularioPreoperacional({ titulo, checklistHTML }) {
         </div>
 
         <div class="card bg-dark text-light border-0 mb-4 p-4 rounded-4 shadow">
-            <h5 class="text-warning mb-4"><i class="bi bi-list-check"></i> Checklist</h5>
+            <h5 class="text-warning mb-4"><i class="bi bi-list-check"></i> Checklist * Seguridad Activa ** Seguridad Pasiva</h5>
             <div style="max-height: 450px; overflow: auto;" id="checklist">
                 ${checklistHTML}
             </div>
@@ -383,7 +383,6 @@ function crearChecklistLineaAmarilla() {
         "**Silla con apoyacabezas  (Estado y ajuste de amortiguación  y tapicería)",
         "**Cinturones de seguridad",
         "*Pitos (Delantero y alarma de Reverso)",
-        "*Seguridad Activa  ** Seguridad Pasiva",
         "**Limpia brisas (Estado de brazo y Plumillas)",
         "*Botón de parada de emergencia",
         "*Estado de cauchos amortiguadores cilindro",
@@ -438,7 +437,6 @@ function crearChecklistLineaBlanca() {
         "Sistema de cierre de la compuerta (Ganchos)",
         "Estado del sistema de Carpado (Carpa, sistema de cierre)",
         "Tanque (Sin corrosión y fisuras, estado de grapas y anclajes)",
-        "* Seguridad Activa  ** Seguridad Pasiva",
         "Puesta a Tierra (Tanque con Combustible)",
         "Línea de Vida (estado de tensores, perros, tensión de la guaya)",
         "Arnés de seguridad con eslinga",
@@ -1101,6 +1099,7 @@ function obtenerNombreDesdeEmail(email) {
 }
 
 console.log("✅ Sistema MOVA cargado completamente - ¡Listo para usar!");
+
 
 
 
